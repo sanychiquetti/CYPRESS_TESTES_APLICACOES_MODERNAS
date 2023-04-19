@@ -1,2 +1,2 @@
 # CYPRESS_TESTES_APLICACOES_MODERNAS
- Curso Udemi de Cypress em aplicações modernas
+ Curso UDEMI com o Prof. Wagner Costa de Aquino
