@@ -88,19 +88,39 @@ describe('Work with basic elements', () =>{
       cy.get('#formComidaVegetariana').should('be.checked')
    })
    //em campo de multipla escolha, mas apenas uma pode ser selecionada
-   it('Combo', () =>{
+   it.only('Combo', () =>{
       cy.get('[data-test=dataEscolaridade]')
-         .select('2o grau incompleto') // aqui ele aceita o que esta na descrição da tag
+         .select('2o grau incompleto') //aqui ele aceita o que esta na descrição da tag
          .should('have.value', '2grauincomp') // aqui ele só aceita o que esta na classe da tag
 
-         //TODO validar as opções do combo
+         //validar as opções do combo, 
+         cy.get('[data-test=dataEscolaridade] option')
+            .should('have.length', 8) //consigo validar as qdades
+         
+         //ver os elementos dessa lista:
+         cy.get('[data-test=dataEscolaridade] option').then($arr =>{
+            const values = [] //guardar esses valores numa array
+            $arr.each(function() {
+               values.push(this.innerHTML) //aqui vou pegar o valor escrito dentre as tags e colocar dentro da array
+            })
+            expect(values).to.include.members(['Superior','Mestrado']) //aqui estou validando que dentro da array, os valores foram encontrados
+         })
    })
 
    //em campo de multipla escolha, posso escolhar mais que uma
    it.only('Combo Multiplo', () =>{
       cy.get('[data-testid=dataEsportes]')
-         .select(['natacao', 'Corrida']) //colocao aqui as que quero selecionar mas pelo value
+         .select(['natacao', 'Corrida', 'Karate']) //colocao aqui as que quero selecionar mas pelo value
 
-         //TODO validar as opções selecionadas do combo multiplo
+         //validar as opções selecionadas do combo multiplo,
+      cy.get('[data-testid=dataEsportes]').then($el =>{
+         expect($el.val()).to.be.deep.equal(['natacao', 'Corrida', 'Karate']) // essa é uma forma
+         expect($el.val()).to.have.length(3)
+      })
+
+      //outra forma agora com invoke
+      cy.get('[data-testid=dataEsportes]')
+         .invoke('val')
+         .should('eql',['natacao', 'Corrida', 'Karate'] )
    })
 })
