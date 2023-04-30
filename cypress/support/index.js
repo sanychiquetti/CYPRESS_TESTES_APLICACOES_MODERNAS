@@ -18,3 +18,10 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+require('@cypress/xpath');
+
+//vamos repriorizar a procura do cypress, quando pedimos a ele o parâmetro de um campo:
+Cypress.SelectorPlayground.defaults({
+   selectorPriority:['id', 'class', 'attributes', 'data-cy', 'data-test', 'data-testid', 'tag', 'nth-child']
+})

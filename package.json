@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "cypress":"cypress open"
+    "cypress": "cypress open"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "cypress": "^3.6.0"
+    "@cypress/xpath": "^2.0.3",
+    "cypress": "^12.11.0"
   }
 }
