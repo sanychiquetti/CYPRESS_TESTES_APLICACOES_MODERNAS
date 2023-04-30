@@ -19,6 +19,6 @@ describe('Work with basic elements', () =>{
    })
 
    it('Using xpath', () =>{
-      cy.xpath('//input')
+      cy.xpath('//input[contains(@onClick, \'Francisco\')]')
    })
 })
