@@ -1,4 +1,4 @@
-/// <reference types="cypress"/>
+/// <reference types="cypress-xpath"/>
 
 describe('Work with basic elements', () =>{
    before(() =>{
@@ -18,7 +18,14 @@ describe('Work with basic elements', () =>{
       cy.get('#tabelaUsuarios tr:contains(\'Doutorado\'):eq(0) td:eq(6) input') //aqui fui buscar pela linha onde ele está, e depois pelos filhos dela.
    })
 
-   it('Using xpath', () =>{
-      cy.xpath('//input[contains(@onClick, \'Francisco\')]')
+   it.only('Using xpath', () =>{
+      cy.xpath('//input[contains(@onclick, \'Francisco\')]')
+      cy.xpath("//table[@id='tabelaUsuarios']//td[contains(.,'Francisco')]/..//input[@type='text']") //exemplo complexo de achar por mei de passear pelas classes
+
+      //quero chegar no Usuario A - Mestrado - e escrever no input:
+      cy.xpath("//td[contains(., 'Usuario A')]/following-sibling::td[contains(., 'Mestrado')]/..//input[@type='text']").type('funciona huruuuu')
+
    })
+
+   
 })

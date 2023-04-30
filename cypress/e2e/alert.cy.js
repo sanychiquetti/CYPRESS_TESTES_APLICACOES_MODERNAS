@@ -10,15 +10,17 @@ describe('Work with alert´s... ', ()=> {
    })
 
    //alert é um evento que vem do windows, o medoto on pega eventos do windows
-   it('Alert',()=> {
-      cy.get('#alert').click()
-      cy.on('window:alert', msg =>{
-         expect(msg).to.be.equal('Alert Simples')
-      })
+   it.only('Alert',()=> {
+      //cy.get('#alert').click()
+      //cy.on('window:alert', msg =>{
+      //   expect(msg).to.be.equal('Alert Simples')
+      //})
+      //como já criamos o comando na pasta command, agora é só usar o comando e passar o locator e a mensagem:
+      cy.clickAlert('#alert', 'Alert Simples')
    })
 
       //alert com mock
-      it.only('Alert with mock',()=> {
+      it('Alert with mock',()=> {
          const stub = cy.stub().as('alerta') //aqui estou criando um mock e com o .as estou nomeando o mock
          cy.on('window:alert', stub) //veja que aqui diferente do exp. acima eu só coloco o stub, pois ele substitui o método
          cy.get('#alert').click().then(() =>{ //já faço a assertiva aqui
@@ -27,7 +29,7 @@ describe('Work with alert´s... ', ()=> {
       })
 
    //Evento confirme (ele tem dois botões ok e cancelar)
-   it.only('Confirm',()=> {
+   it('Confirm',()=> {
       cy.on('window:confirm', msg =>{
          expect(msg).to.be.equal('Confirm Simples')
       })
@@ -38,7 +40,7 @@ describe('Work with alert´s... ', ()=> {
    })
 
    //Vamos fazer uma negativa, se a escolha for cancelar
-   it.only('Deny',()=> {
+   it('Deny',()=> {
       cy.on('window:confirm', msg =>{
          expect(msg).to.be.equal('Confirm Simples')
          return false //aqui estou pedindo para cancelar
@@ -50,7 +52,7 @@ describe('Work with alert´s... ', ()=> {
    })
 
    //evento prompt
-   it.only('Prompt',()=> {
+   it('Prompt',()=> {
       cy.window().then(win =>{
          cy.stub(win, 'prompt').returns('42') //criar o mock e precisamos falar para ele qual retorno queremos 
       })

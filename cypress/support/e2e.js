@@ -20,6 +20,7 @@ import './commands'
 // require('./commands')
 
 require('@cypress/xpath');
+require('cypress-xpath');
 
 //vamos repriorizar a procura do cypress, quando pedimos a ele o parâmetro de um campo:
 Cypress.SelectorPlayground.defaults({
