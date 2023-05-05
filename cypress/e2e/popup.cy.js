@@ -19,7 +19,6 @@ describe('Work with Popup', () =>{
    })
 
    //vamos testar o iframe com link, primeiro vamos ver se o link está apontando para o endereço correto
-
    describe.only('Work with popup with link', ()=>{
       beforeEach(() =>{
             cy.visit('https://wcaquino.me/cypress/componentes.html')
