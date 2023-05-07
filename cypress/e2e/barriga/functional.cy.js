@@ -7,18 +7,20 @@ describe('Should test at a funcional level', () =>{
         cy.get(':nth-child(2) > .form-control').type('Santope77')
         cy.get('.btn').click()
         //validar que ele abriu uma popup mensagem de boas vindas
-        cy.on('window:alert', msg =>{
-            expect(msg).to.be.equal('Bem vindo, Sany !')
-         })
+        cy.get('.toast-message').should('contain', 'Bem vindo')
+        // cy.on('window:alert', msg =>{
+        //     expect(msg).to.be.equal('Bem vindo, Sany!')
+        //  })
     })
 
     it('Criando uma conta', () => {
 
         //inserir uma conta
-        cy.get('.dropdown-toggle').click()
+        cy.get('[data-test="menu-settings"]').click()
         cy.get('[href="/contas"]').click()
-        cy.get('.form-control').type('sany')
-        cy.get('.far').click()
+        cy.get('[data-test="nome"]').type('sany')
+        cy.get('.btn').click()
+        cy.get('.toast-success').should('contain', 'Conta inserida com sucesso')
 
         //alterar uma conta
         cy.get('tr > :nth-child(2) > :nth-child(1) > .far').click()

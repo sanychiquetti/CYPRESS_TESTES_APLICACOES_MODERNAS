@@ -24,5 +24,5 @@ require('cypress-xpath');
 
 //vamos repriorizar a procura do cypress, quando pedimos a ele o parâmetro de um campo:
 Cypress.SelectorPlayground.defaults({
-   selectorPriority:['id', 'class', 'attributes', 'data-cy', 'data-test', 'data-testid', 'tag', 'nth-child']
+   selectorPriority:['data-cy', 'data-test', 'data-testid', 'id', 'class', 'attributes', 'tag', 'nth-child']
 })
