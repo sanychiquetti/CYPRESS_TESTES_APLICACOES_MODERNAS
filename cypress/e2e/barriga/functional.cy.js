@@ -12,7 +12,7 @@ describe('Should test at a funcional level', () => {
     it('Create an account', () => {
         cy.acessarMenuConta()
         cy.inserirConta('Conta de teste')
-        cy.get('.toast-success')
+        cy.get(loc.MESSAGE)
             .should('contain', 'Conta inserida com sucesso')
     })
 
@@ -32,7 +32,6 @@ describe('Should test at a funcional level', () => {
         cy.acessarMenuConta()
         cy.inserirConta()
             .type('conta alterada')
-        cy.get(loc.CONTAS.BTN_SALVAR).click()
         cy.get(loc.MESSAGE)
             .should('contain', 'status code 400')
     })
@@ -42,6 +41,14 @@ describe('Should test at a funcional level', () => {
         cy.get(loc.MOVIMENTACAO.DESCRICAO).type('Desc')
         cy.get(loc.MOVIMENTACAO.VALOR).type('123')
         cy.get(loc.MOVIMENTACAO.INTERESSADO).type('Inter')
+        cy.get(loc.MOVIMENTACAO.STATUS).click()
         cy.get(loc.MOVIMENTACAO.BTN_SALVAR_MOV).click()
+
+        cy.get(loc.EXTRATO.LINHAS).should('have.length', 7)
+        cy.xpath(loc.EXTRATO.XP_BUSCA_ELEMENTO).should('exist')
+    })
+
+    it('Should get balance', () =>{
+        
     })
 })
