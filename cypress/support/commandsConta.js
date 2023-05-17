@@ -9,7 +9,7 @@ Cypress.Commands.add('acessarMenuConta', () => {
 
 Cypress.Commands.add('inserirConta', conta => {
     cy.get(loc.CONTAS.NOME)
-        .type('sany')
+        .type(conta)
     cy.get(loc.CONTAS.BTN_SALVAR)
         .click()
 })
