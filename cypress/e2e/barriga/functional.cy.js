@@ -4,7 +4,7 @@ import loc from '../../support/locators'
 import '../../support/commandsConta'
 
 describe('Should test at a funcional level', () => {
-    before(() => {
+    beforeEach(() => {
         cy.login('sanymara77@hotmail.com', 'Santope77')
         cy.resetApp()
     })
