@@ -6,7 +6,7 @@ import '../../support/commandsConta'
 describe('Should test at a funcional level', () => {
     beforeEach(() => {
         cy.login('user', 'passwd')
-        cy.get(loc.MENU.HOME).click()
+        //cy.get(loc.MENU.HOME).click()
         cy.resetApp()
     })
 
@@ -45,6 +45,7 @@ describe('Should test at a funcional level', () => {
         cy.get(loc.MOVIMENTACAO.CONTA).select('Conta para movimentacoes')
         cy.get(loc.MOVIMENTACAO.STATUS).click()
         cy.get(loc.MOVIMENTACAO.BTN_SALVAR_MOV).click()
+        cy.get(loc.MESSAGE).should('contain', 'sucesso')
 
         cy.get(loc.EXTRATO.LINHAS).should('have.length', 7)
         cy.xpath(loc.EXTRATO.FN_XP_BUSCA_ELEMENTO('Desc', '123')).should('exist')
@@ -53,9 +54,19 @@ describe('Should test at a funcional level', () => {
     it('Should get balance', () => {
         cy.get(loc.MENU.HOME).click()
         cy.xpath(loc.SALDO.FN_XP_SALDO_CONTA('Conta para saldo')).should('contain', '534')
+
+        cy.get(loc.MENU.EXTRATO).click()
+        cy.xpath(loc.EXTRATO.FN_XP_ALTERAR_EXTRATO('Movimentacao 1, calculo saldo')).click()
+        cy.get(loc.MOVIMENTACAO.DESCRICAO).should('have.value', 'Movimentacao 1, calculo saldo')
+        cy.get(loc.MOVIMENTACAO.STATUS).click()
+        cy.get(loc.MOVIMENTACAO.BTN_SALVAR_MOV).click()
+        cy.get(loc.MESSAGE).should('contain', 'sucesso')
+
+        cy.get(loc.MENU.HOME).click()
+        cy.xpath(loc.SALDO.FN_XP_SALDO_CONTA('Conta para saldo')).should('contain', '4.034,00')
     })
 
-    it.only('Should remove a transaction', () => {
+    it('Should remove a transaction', () => {
         cy.get(loc.MENU.EXTRATO)
             .click()
         cy.xpath(loc.EXTRATO.FN_XP_DELETAR_EXTRATO('Movimentacao para exclusao'))

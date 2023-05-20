@@ -32,7 +32,9 @@ const locators = {
     EXTRATO: {
         LINHAS: '.list-group > li',
         FN_XP_BUSCA_ELEMENTO: (desc, value) => `//span[contains(., "${desc}")]/following-sibling::small[contains(., "${value}")]`,
-        FN_XP_DELETAR_EXTRATO: conta => `//span[contains(., "${conta}")]/../../..//i[@class="far fa-trash-alt"]`
+        FN_XP_DELETAR_EXTRATO: conta => `//span[contains(., "${conta}")]/../../..//i[@class="far fa-trash-alt"]`,
+        FN_XP_ALTERAR_EXTRATO: conta => `//span[contains(., "${conta}")]/../../..//i[@class="fas fa-edit"]`,
+         
     },
 
     SALDO: {
