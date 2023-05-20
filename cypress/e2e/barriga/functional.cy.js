@@ -6,8 +6,10 @@ import '../../support/commandsConta'
 describe('Should test at a funcional level', () => {
     beforeEach(() => {
         cy.login('user', 'passwd')
+        cy.get(loc.MENU.HOME).click()
         cy.resetApp()
     })
+
 
     it('Create an account', () => {
         cy.acessarMenuConta()
@@ -18,7 +20,7 @@ describe('Should test at a funcional level', () => {
 
     it('Change an account', () => {
         cy.acessarMenuConta()
-        cy.xpath(loc.CONTAS.FN_XP_BTN_ALTERAR('Conta de teste'))
+        cy.xpath(loc.CONTAS.FN_XP_BTN_ALTERAR('Conta para alterar'))
             .click()
         cy.get(loc.CONTAS.NOME)
             .clear()
@@ -30,8 +32,7 @@ describe('Should test at a funcional level', () => {
     })
     it('Cant Create repeated account', () => {
         cy.acessarMenuConta()
-        cy.inserirConta()
-            .type('conta alterada')
+        cy.inserirConta('Conta mesmo nome')
         cy.get(loc.MESSAGE)
             .should('contain', 'status code 400')
     })
@@ -41,7 +42,7 @@ describe('Should test at a funcional level', () => {
         cy.get(loc.MOVIMENTACAO.DESCRICAO).type('Desc')
         cy.get(loc.MOVIMENTACAO.VALOR).type('123')
         cy.get(loc.MOVIMENTACAO.INTERESSADO).type('Inter')
-        cy.get(loc.MOVIMENTACAO.CONTA).select('conta alterada')
+        cy.get(loc.MOVIMENTACAO.CONTA).select('Conta para movimentacoes')
         cy.get(loc.MOVIMENTACAO.STATUS).click()
         cy.get(loc.MOVIMENTACAO.BTN_SALVAR_MOV).click()
 
@@ -51,13 +52,13 @@ describe('Should test at a funcional level', () => {
 
     it('Should get balance', () => {
         cy.get(loc.MENU.HOME).click()
-        cy.xpath(loc.SALDO.FN_XP_SALDO_CONTA('conta alterada')).should('contains', '123,00')
+        cy.xpath(loc.SALDO.FN_XP_SALDO_CONTA('Conta para saldo')).should('contain', '534')
     })
 
-    it('Should remove a transaction', () => {
+    it.only('Should remove a transaction', () => {
         cy.get(loc.MENU.EXTRATO)
             .click()
-        cy.xpath(loc.EXTRATO.FN_BTN_DELETAR_EXTRATO('Desc'))
+        cy.xpath(loc.EXTRATO.FN_XP_DELETAR_EXTRATO('Movimentacao para exclusao'))
             .click()
         cy.get(loc.MESSAGE).should('contain', 'sucesso')
 
