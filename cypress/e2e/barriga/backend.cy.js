@@ -8,22 +8,23 @@ describe('Should test at a funcional level', () => {
             .then(tkn => {
                 token = tkn // guardando o token dentro da variável token
             })
+        cy.resetRest()
     })
 
     it('Create an account', () => {
         cy.request({
-            url: 'https://barrigarest.wcaquino.me/contas',
+            url: '/contas',
             method: 'POST',
             headers: { Authorization: `JWT ${token}` },
             body: {
-                nome: 'Conta via rest4'
+                nome: 'Conta via rest'
             }
         }).as('response') //dando um nome para encontrar na validação
 
         cy.get('@response').then(res => {
             expect(res.status).to.be.equal(201)
             expect(res.body).to.have.property('id') // estamos validando que no corpo da response veio um id
-            expect(res.body).to.have.property('nome', 'Conta via rest4') // validndo que o nome veio conforma o nome que demos na criação da conta
+            expect(res.body).to.have.property('nome', 'Conta via rest') // validndo que o nome veio conforma o nome que demos na criação da conta
         })
     })
 
