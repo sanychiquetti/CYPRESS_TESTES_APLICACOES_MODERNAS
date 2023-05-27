@@ -1,5 +1,6 @@
 /// <reference types="cypress"/>
 
+
 describe('Should test at a funcional level', () => {
     let token //criando a váriavel token
 
@@ -29,8 +30,18 @@ describe('Should test at a funcional level', () => {
     })
 
     it('Change an account', () => {
+        cy.request({
+            url: 'https://barrigarest.wcaquino.me/contas/1749997',
+            method: 'PUT',
+            headers: { Authorization: `JWT ${token}` },
+            body: {
+                nome: 'Conta para saldo alterada react'
+            }
+        }).as('response')
 
+        cy.get('@response').its('status').should('be.equal', 200)
     })
+
     it('Cant Create repeated account', () => {
 
     })
