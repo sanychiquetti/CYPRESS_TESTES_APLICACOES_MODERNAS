@@ -1,3 +1,4 @@
+
 import loc from './locators'
 
 Cypress.Commands.add('clickAlert', (locator, message) => {
@@ -31,6 +32,7 @@ Cypress.Commands.add('getToken', () => {
       }
    }).its('body.token').should('not.be.empty') //não estar vazio validação
       .then(token => {
+         Cypress.env('token', token) // assim não precisaremos mais chamar o tokem em todo test, fazendo um comando abaico com overwrite
          return token
       })
 })
@@ -45,6 +47,7 @@ Cypress.Commands.add('resetRest', () => {
    })
 })
 
+
 Cypress.Commands.add('getCountByName', name => {
    cy.getToken('user', 'passwd').then(token => {
       cy.request({
@@ -58,4 +61,16 @@ Cypress.Commands.add('getCountByName', name => {
          return res.body[0].id
       })
    })
+})
+
+//com esse comando, estamos colocando o token dentro de cada requisição, não precisando mais chamar o  token
+Cypress.Commands.overwrite('request', (originalFn, ...options) => {
+   if (options.length === 1) {
+      if(Cypress.env('token')){
+         options[0].headers = {
+            Authorization: `JWT ${Cypress.env('token')}`
+         }
+      }
+   }
+   return originalFn(...options)
 })

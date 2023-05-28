@@ -4,11 +4,38 @@ import loc from '../../support/locators'
 import '../../support/commandsConta'
 
 describe('Should test at a funcional level', () => {
-    beforeEach(() => {
+    before(() => {
+        cy.intercept(
+            {
+                method: 'POST',
+                url: '/signin'
+            },
+            {
+                id: 100,
+                nome: 'Usuario Falso',
+                token: 'Uma string que não deve ser aceita... mas vai'
+
+            }).as('signin')
+
+        cy.intercept(
+            {
+                method: 'GET',
+                url: '/saldo'
+            },
+            [{
+                conta_id: 9991,
+                conta: 'Carteira',
+                saldo: '15000.00'
+            }],
+            [{
+                conta_id: 9992,
+                conta: 'Banco',
+                saldo: '100000.00'
+            }]
+        ).as('saldo')
         cy.login()
         cy.resetApp()
     })
-
 
     it('Create an account', () => {
         cy.acessarMenuConta()
@@ -62,7 +89,7 @@ describe('Should test at a funcional level', () => {
         cy.get(loc.MESSAGE).should('contain', 'sucesso')
 
         cy.get(loc.MENU.HOME).click()
-        cy.xpath(loc.SALDO.FN_XP_SALDO_CONTA('Conta para saldo')).should('contain', '4.034,00')
+        cy.xpath(loc.SALDO.FN_XP_SALDO_CONTA('Conta para saldo')).should('contain', '534,00')
     })
 
     it('Should remove a transaction', () => {

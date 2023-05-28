@@ -1,15 +1,14 @@
 /// <reference types="cypress"/>
 
-
+import dayjs from 'dayjs'
 describe('Should test at a funcional level', () => {
-    let token //criando a váriavel token
-   
+    //let token //criando a váriavel token
 
     beforeEach(() => {
         cy.getToken('user', 'passwd')
-            .then(tkn => {
-                token = tkn // guardando o token dentro da variável token
-            })
+        // .then(tkn => {
+        //     token = tkn // guardando o token dentro da variável token
+        // })
         cy.resetRest()
     })
 
@@ -17,7 +16,7 @@ describe('Should test at a funcional level', () => {
         cy.request({
             url: '/contas',
             method: 'POST',
-            headers: { Authorization: `JWT ${token}` },
+            //headers: { Authorization: `JWT ${token}` }, // não precisa mais devido já ter criado no commands
             body: {
                 nome: 'Conta via rest'
             }
@@ -31,20 +30,12 @@ describe('Should test at a funcional level', () => {
     })
 
     it('Change an account', () => {
-        cy.request({
-            method: 'GET',
-            url: '/contas',
-            headers: { Authorization: `JWT ${token}` },
-            //vamos passar uma query string na url, entao passamos outro atributo chamado qs
-            qs: {
-                nome: 'Conta para alterar'
-            }
-        })//.then(res => console.log(res)) //aqui estamos pegando a resposta e imprimindo no console para pegarmos a url da chamada, após isso alteramos o res para o código abaixo:
-            .then(res => {
+        cy.getCountByName('Conta para alterar')
+            .then(contaId => {
                 cy.request({
-                    url: `/contas/${res.body[0].id}`,
+                    url: `/contas/${contaId}`,
                     method: 'PUT',
-                    headers: { Authorization: `JWT ${token}` },
+                    //headers: { Authorization: `JWT ${token}` },
                     body: {
                         nome: 'Conta alterada via rest'
                     }
@@ -58,7 +49,7 @@ describe('Should test at a funcional level', () => {
         cy.request({
             url: '/contas',
             method: 'POST',
-            headers: { Authorization: `JWT ${token}` },
+            //headers: { Authorization: `JWT ${token}` },
             body: {
                 nome: 'Conta mesmo nome'
             },
@@ -72,13 +63,12 @@ describe('Should test at a funcional level', () => {
     })
 
     it('Should create a transaction', () => {
-        const dayjs = require('daysjs')
         cy.getCountByName('Conta para movimentacoes')
             .then(contaId => { // retorno dela vamos chamar de contaId e chamar o metodo
                 cy.request({
                     method: 'POST',
                     url: '/transacoes',
-                    headers: { Authorization: `JWT ${token}` },
+                    //headers: { Authorization: `JWT ${token}` },
                     body: {
                         conta_id: contaId,
                         data_pagamento: dayjs().add(1, 'day').format('DD/MM/YYYY'),
@@ -95,11 +85,66 @@ describe('Should test at a funcional level', () => {
     })
 
     it('Should get balance', () => {
+        cy.request({
+            method: 'GET',
+            url: '/saldo',
+            //headers: { Authorization: `JWT ${token}` },
+        }).then(res => {
+            let saldoConta = null // declarando a varialvel para guardar o valodr de saldoConta
+            res.body.forEach(c => { //na resposta do body, vamos fazer um laço, onde para cada conta vamos executar o seguinte bloco
+                if (c.conta === 'Conta para saldo') saldoConta = c.saldo // se para essa linha (ele vai olhar linha a linha, ate chegar na linha em questão), c.conta for igual 'conta para saldo', então o saldoConta vai ser receber o valor de c.saldo(onde esta o valor de 534)
+            })
+            expect(saldoConta).to.be.equal('534.00') // aqui verificamos se realmente ele pegou o camp certo
+        })
 
+        //precisamos pegar o id de uma conta para poder fazer a alteração
+        cy.request({
+            method: 'GET',
+            url: '/transacoes',
+            //headers: { Authorization: `JWT ${token}` },
+            qs: { descricao: 'Movimentacao 1, calculo saldo' }
+        }).then(res => {
+            cy.request({
+                url: `/transacoes/${res.body[0].id}`,
+                method: 'PUT',
+                //headers: { Authorization: `JWT ${token}` },
+                body: {
+                    status: true,
+                    data_pagamento: dayjs().add(1, 'day').format('DD/MM/YYYY'),
+                    data_transacao: dayjs().format('DD/MM/YYYY'),
+                    descricao: res.body[0].descricao,
+                    envolvido: res.body[0].envolvido,
+                    valor: res.body[0].valor,
+                    conta_id: res.body[0].conta_id
+                }
+            }).its('status').should('be.equal', 200)
+        })
+
+        cy.request({
+            method: 'GET',
+            url: '/saldo',
+            //headers: { Authorization: `JWT ${token}` },
+        }).then(res => {
+            let saldoConta = null
+            res.body.forEach(c => {
+                if (c.conta === 'Conta para saldo') saldoConta = c.saldo
+            })
+            expect(saldoConta).to.be.equal('4034.00')
+        })
     })
 
     it('Should remove a transaction', () => {
-
-
+        cy.request({
+            method: 'GET',
+            url: '/transacoes',
+            //headers: { Authorization: `JWT ${token}`},
+            qs: { descricao: 'Movimentacao para exclusao' }
+        }).then(res => {
+            cy.request({
+                method: 'DELETE',
+                url: `/transacoes/${res.body[0].id}`,
+               // headers: { Authorization: `JWT ${token}` },
+            }).its('status').should('be.equal', 204)
+        })
     })
 })
