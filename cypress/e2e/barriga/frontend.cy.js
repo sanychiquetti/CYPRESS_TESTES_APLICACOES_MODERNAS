@@ -2,55 +2,75 @@
 
 import loc from '../../support/locators'
 import '../../support/commandsConta'
+import buildEnv from '../../support/buildEnv'
 
 describe('Should test at a funcional level', () => {
-    before(() => {
-        cy.intercept(
-            {
-                method: 'POST',
-                url: '/signin'
-            },
-            {
-                id: 100,
-                nome: 'Usuario Falso',
-                token: 'Uma string que não deve ser aceita... mas vai'
+    after(() => {
+        cy.clearLocalStorage()
+    })
 
-            }).as('signin')
-
-        cy.intercept(
-            {
-                method: 'GET',
-                url: '/saldo'
-            },
-            [{
-                conta_id: 9991,
-                conta: 'Carteira',
-                saldo: '15000.00'
-            }],
-            [{
-                conta_id: 9992,
-                conta: 'Banco',
-                saldo: '100000.00'
-            }]
-        ).as('saldo')
+    beforeEach(() => {
+        buildEnv()
         cy.login()
-        cy.resetApp()
+        cy.get(loc.MENU.HOME)
     })
 
     it('Create an account', () => {
+        cy.intercept('POST', '/contas',
+            [{
+                id: 3,
+                nome: 'Conta de teste',
+                visivel: true,
+                usuario_id: 1
+            }]
+        ).as('outraConta')
+
         cy.acessarMenuConta()
+
+        cy.intercept( 'GET', '/contas',
+            [
+                {
+                    id: 1,
+                    nome: 'Carteira',
+                    visivel: true,
+                    usuario_id: 1
+                },
+                {
+                    id: 2,
+                    nome: 'Banco',
+                    visivel: true,
+                    usuario_id: 1
+                },
+                {
+                    id: 2,
+                    nome: 'Conta de teste',
+                    visivel: true,
+                    usuario_id: 1
+                }
+            ]
+        ).as('contasSave')
         cy.inserirConta('Conta de teste')
         cy.get(loc.MESSAGE)
             .should('contain', 'Conta inserida com sucesso')
     })
 
     it('Change an account', () => {
+
+        cy.intercept('PUT', '/contas/**', //esses ** é para qualquer coisa a apartir de /contas 
+            {
+                id: 1,
+                nome: 'Conta Alterada',
+                visivel: true,
+                usuario_id: 1
+            }
+        ),
+
         cy.acessarMenuConta()
-        cy.xpath(loc.CONTAS.FN_XP_BTN_ALTERAR('Conta para alterar'))
+        cy.xpath(loc.CONTAS.FN_XP_BTN_ALTERAR('Carteira'))
             .click()
         cy.get(loc.CONTAS.NOME)
             .clear()
-            .type('conta alterada')
+            .type('Conta Alterada')
         cy.get(loc.CONTAS.BTN_SALVAR)
             .click()
         cy.get(loc.MESSAGE)
