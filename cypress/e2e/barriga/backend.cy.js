@@ -11,7 +11,6 @@ describe('Should test at a funcional level', () => {
         // })
         cy.resetRest()
     })
-
     it('Create an account', () => {
         cy.request({
             url: '/contas',
@@ -28,7 +27,6 @@ describe('Should test at a funcional level', () => {
             expect(res.body).to.have.property('nome', 'Conta via rest') // validndo que o nome veio conforma o nome que demos na criação da conta
         })
     })
-
     it('Change an account', () => {
         cy.getCountByName('Conta para alterar')
             .then(contaId => {
@@ -44,7 +42,6 @@ describe('Should test at a funcional level', () => {
                 cy.get('@response').its('status').should('be.equal', 200)
             })
     })
-
     it('Cant Create repeated account', () => {
         cy.request({
             url: '/contas',
@@ -61,7 +58,6 @@ describe('Should test at a funcional level', () => {
             expect(res.body.error).to.have.equal('Já existe uma conta com esse nome!')
         })
     })
-
     it('Should create a transaction', () => {
         cy.getCountByName('Conta para movimentacoes')
             .then(contaId => { // retorno dela vamos chamar de contaId e chamar o metodo
@@ -83,7 +79,6 @@ describe('Should test at a funcional level', () => {
             })
         cy.get('@response').its('status').should('to.be.equal', 201) // aqui estou pegando o retorno do alias o conteudo do status e verificando se é igual a 201
     })
-
     it('Should get balance', () => {
         cy.request({
             method: 'GET',
@@ -132,7 +127,6 @@ describe('Should test at a funcional level', () => {
             expect(saldoConta).to.be.equal('4034.00')
         })
     })
-
     it('Should remove a transaction', () => {
         cy.request({
             method: 'GET',
@@ -143,7 +137,7 @@ describe('Should test at a funcional level', () => {
             cy.request({
                 method: 'DELETE',
                 url: `/transacoes/${res.body[0].id}`,
-               // headers: { Authorization: `JWT ${token}` },
+                // headers: { Authorization: `JWT ${token}` },
             }).its('status').should('be.equal', 204)
         })
     })
