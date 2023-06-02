@@ -25,7 +25,6 @@ describe('Should test at a funcional level', () => {
         ).as('createAccount')
 
         cy.acessarMenuConta()
-
         cy.intercept('GET', '/contas',
             [
                 {
@@ -83,7 +82,6 @@ describe('Should test at a funcional level', () => {
         ).as('saveRepeatedAccount')
 
         cy.acessarMenuConta()
-
         cy.inserirConta('Conta mesmo nome')
         cy.get(loc.MESSAGE)
             .should('contain', 'code 400')
@@ -198,5 +196,25 @@ describe('Should test at a funcional level', () => {
         cy.xpath(loc.EXTRATO.FN_XP_DELETAR_EXTRATO('Movimentacao para exclusao'))
             .click()
         cy.get(loc.MESSAGE).should('contain', 'sucesso')
+    })
+    it.only('Should validate data send to create an account', () => {
+        cy.intercept('POST', '/contas',
+            [
+                { id: 3, nome: 'Conta de teste', visivel: true, usuario_id: 1 }
+            ]
+        ).as('createAccount')
+
+        cy.acessarMenuConta()
+        cy.intercept('GET', '/contas',
+            [
+                { id: 1, nome: 'Carteira', visivel: true, usuario_id: 1 },
+                { id: 2, nome: 'Banco', visivel: true, usuario_id: 1 },
+                { id: 2, nome: 'Conta de teste', visivel: true, usuario_id: 1 }
+            ]
+        ).as('saveAccounts')
+
+        cy.inserirConta('{CONTROL}') 
+        cy.get(loc.MESSAGE)
+            .should('contain', 'Conta inserida com sucesso')
     })
 })
