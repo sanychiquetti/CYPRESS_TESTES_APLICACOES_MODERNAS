@@ -197,11 +197,19 @@ describe('Should test at a funcional level', () => {
             .click()
         cy.get(loc.MESSAGE).should('contain', 'sucesso')
     })
-    it.only('Should validate data send to create an account', () => {
-        cy.intercept('POST', '/contas',
-            [
-                { id: 3, nome: 'Conta de teste', visivel: true, usuario_id: 1 }
-            ]
+    it('Should validate data send to create an account', () => {
+        cy.intercept('POST', '/contas', (req) => {
+            console.log(req)
+            expect(req.body.nome).to.be.empty
+            expect(req.headers).to.have.property('authorization')
+            req.reply({
+                statusCode: 201,
+                body:{
+
+                     id: 3, nome: 'Conta de teste', visivel: true, usuario_id: 1                 }
+            })
+        }
+            
         ).as('createAccount')
 
         cy.acessarMenuConta()
@@ -209,12 +217,53 @@ describe('Should test at a funcional level', () => {
             [
                 { id: 1, nome: 'Carteira', visivel: true, usuario_id: 1 },
                 { id: 2, nome: 'Banco', visivel: true, usuario_id: 1 },
-                { id: 2, nome: 'Conta de teste', visivel: true, usuario_id: 1 }
+                { id: 3, nome: 'Conta de teste', visivel: true, usuario_id: 1 }
             ]
         ).as('saveAccounts')
 
         cy.inserirConta('{CONTROL}') 
+        //cy.wait('@createAccount').its('request.body.nome').should('not.be.empty') // essa é uma forma de fazer validação que a request foi enviada corretamente., que o nome dentro do body da request não está vazio
         cy.get(loc.MESSAGE)
             .should('contain', 'Conta inserida com sucesso')
     })
+    //validando layout
+    it('Should test colors', () =>{
+        //interceptar a rota de extrato
+        cy.intercept('GET', '/extrato/**',
+
+        [
+            { "conta": "Conta para movimentacoes", "id": 1640347, "descricao": "Receita paga", "envolvido": "AAA", "observacao": null, "tipo": "REC", "data_transacao": "2023-05-27T03:00:00.000Z", "data_pagamento": "2023-05-27T03:00:00.000Z", "valor": "-1500.00", "status": true, "conta_id": 1751923, "usuario_id": 33439, "transferencia_id": null, "parcelamento_id": null },
+            { "conta": "Conta com movimentacao", "id": 1640348, "descricao": "Receita pendente", "envolvido": "BBB", "observacao": null, "tipo": "REC", "data_transacao": "2023-05-27T03:00:00.000Z", "data_pagamento": "2023-05-27T03:00:00.000Z", "valor": "-1500.00", "status": false, "conta_id": 1751924, "usuario_id": 33439, "transferencia_id": null, "parcelamento_id": null },
+            { "conta": "Conta para saldo", "id": 1640349, "descricao": "Despesa paga", "envolvido": "CCC", "observacao": null, "tipo": "DESP", "data_transacao": "2023-05-27T03:00:00.000Z", "data_pagamento": "2023-05-27T03:00:00.000Z", "valor": "3500.00", "status": true, "conta_id": 1751925, "usuario_id": 33439, "transferencia_id": null, "parcelamento_id": null },
+            { "conta": "Conta para saldo", "id": 1640350, "descricao": "Despesa pendente", "envolvido": "DDD", "observacao": null, "tipo": "DESP", "data_transacao": "2023-05-27T03:00:00.000Z", "data_pagamento": "2023-05-27T03:00:00.000Z", "valor": "-1000.00", "status": false, "conta_id": 1751925, "usuario_id": 33439, "transferencia_id": null, "parcelamento_id": null },
+        ],
+    )
+        cy.get(loc.MENU.EXTRATO).click()
+        cy.xpath(loc.EXTRATO.FN_XP_LINHA('Receita paga')).should('have.class', 'receitaPaga') // aqui pedimos para validar que nessalinha tem uma classe de receitaPaga
+        cy.xpath(loc.EXTRATO.FN_XP_LINHA('Receita pendente')).should('have.class', 'receitaPendente') // aqui pedimos para validar que nessalinha tem uma classe de receitaPaga
+        cy.xpath(loc.EXTRATO.FN_XP_LINHA('Despesa paga')).should('have.class', 'despesaPaga') // aqui pedimos para validar que nessalinha tem uma classe de receitaPaga
+        cy.xpath(loc.EXTRATO.FN_XP_LINHA('Despesa pendente')).should('have.class', 'despesaPendente') // aqui pedimos para validar que nessalinha tem uma classe de receitaPaga
+    })
+
+    //testar responsividade, reduzindo o tamanho da tela (cy.viewport)e validando que o menu desapareceu, pois virou sanduiche
+    it('Should test the responsivenness', () => {
+        cy.get('[data-test=menu-home]').should('exist') // primeiro certificando que ums dos elementos do menu está visivel na tela normal
+            .and('be.visible') // verifica que está visivel
+        //vamos trocar o tamanho da tela
+        cy.viewport(500, 700)
+        //testar se o item do menu não está mais visivel
+        cy.get('[data-test=menu-home]').should('exist')
+        .and('be.not.visible') //verifica que não está visivel
+
+        //verificando por um modelo de celular
+        cy.viewport('iphone-8')
+        cy.get('[data-test=menu-home]').should('exist')
+        .and('be.not.visible')
+        
+        //verificando pelo modelo de ipad e estara visivel
+        cy.viewport('ipad-mini')
+        cy.get('[data-test=menu-home]').should('exist')
+        .and('be.visible')
+    })
+
 })

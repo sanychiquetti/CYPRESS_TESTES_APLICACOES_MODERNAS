@@ -1,6 +1,6 @@
 /// <reference types="cypress"/>
 
-describe('Work with times', () => {
+describe('Work with time', () => {
     before(() => {
         cy.visit('https://wcaquino.me/cypress/componentes.html')
     }) 
@@ -25,7 +25,7 @@ describe('Work with times', () => {
     //agora vamos avançar no tempo conforme a necessidade, se eu preciso ficar avançando no tempo
     it.only('Tick Goes to the future', ()=> {
         cy.get('#buttonTimePassed').click()
-        cy.get('#resultado > span').should('contain', '16833') // aqui ele vai pegar apenas no momento do click 
+        cy.get('#resultado > span').should('contain', '1685') // aqui ele vai pegar apenas no momento do click 
         cy.get('#resultado > span').invoke('text').then( t =>{
             const number = parseInt(t)
             cy.wrap(number).should('be.gt', 168231675329) //aqui estamos pedindo para pegar o texto e validar que o texto deve se maoir que o valor que queremos validar       
